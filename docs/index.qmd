@@ -1,0 +1,12 @@
+---
+title: "DATA 304 Gallery"
+author: "Lily McAboy"
+format:
+  html:
+    embed-resources: true
+    code-tools: true
+---
+
+# Homework Links
+
+[Homework5](../hw/hw5.html)
