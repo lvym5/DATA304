@@ -1,26 +1,85 @@
 ---
-title: "Untitled"
-format: html
-editor: visual
+title: "DATA 304 Gallery"
+author: "Lily McAboy"
+format:
+  html:
+    embed-resources: true
+    code-tools: true
 ---
-
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
 ```{r}
-1 + 1
+#| include: false
+library(vegawidget)
+library(dplyr)
+library(reticulate)
+library(altair)
 ```
 
-You can add options to executable code like this
-
-```{r}
-#| echo: false
-2 * 2
+```{python}
+#| include: false
+import pandas as pd
+import vega_datasets as data
+import altair as alt
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+# Exercise 1
+
+Copy of Graphic: 
+
+![DataIsBeautiful](https://www.reddit.com/r/dataisbeautiful/comments/1ij5q7c/oc_three_worst_singleday_stock_market_drops_in)
+
+What marks are being used? What variables are mapped to which properties?
+
+What is the main story of this graphic?
+
+What makes it a good graphic?
+
+What features do you think you would know how to implement in Vega-Lite?
+
+Are there any features of the graphic that you would not know how to do in Vega-Lite? If so, list them.
+
+# Exercise 2
+
+## Visualizing Weather 1
+Create a graphic that shows the mean temperature for each month. How many “months” should you be displaying? (There is more than one answer to this – perhaps try doing it more that one way.)
+
+### Way 1
+
+In this graphic, I am showing the mean max temperature per month, color is used as a guide to show the year for a specific month. 
+
+```{r}
+'
+{
+"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+"data": {
+  "url": "https://calvin-data304.netlify.app/data/weather-with-dates.csv"
+},
+"height": 400,
+"width": 500,
+"title": "Mean Max Temperature Per Month",
+"mark": "circle" ,
+"encoding": {
+  "x": {"field": "month", "type": "temporal", "timeUnit": "month","title": "Month"},
+  "y": {"field": "temp_max", "type": "quantitative", "aggregate": "average", "title": "Temperature (F)"},
+  "color": {"field": "year", "title": "Year"},
+  "fillOpacity": {"value": 0.8},
+  "size": {"value": 80}
+}
+}' |> as_vegaspec()
+```
+### Way 2
+
+Using Python and Pandas to calculate the actual mean temperature for each day, and then aggregating by month
+
+```{python}
+
+```
+
+```{python}
+
+```
+
+
+
+## Visualizing Weather 2
+Exercise 3 Create a graphic that shows how the different types of weather (rain, fog, etc.) are distributed by month in Seattle. When is it rainiest in Seattle? Sunniest?
+
