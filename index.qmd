@@ -52,6 +52,9 @@ I am not sure how to add the "extra" lines on the x axis. I think that most of m
 # Exercise 2
 
 ## Visualizing Weather 1
+
+### I am having issues with my graphs. I have my first graphic to be graded and then the rest I am attaching to try to debug or figure out. 
+
 Create a graphic that shows the mean temperature for each month. How many “months” should you be displaying? (There is more than one answer to this – perhaps try doing it more that one way.)
 
 ### Way 1
@@ -80,7 +83,7 @@ In this graphic, I am showing the mean max temperature per month, color is used 
 ```
 ### Way 2
 
-Using Python and Pandas to calculate the actual mean temperature for each day, and then aggregating by month
+Using R to calculate the actual mean temperature for each day, and then aggregating by month
 
 ```{r}
 seattle_data <- read.csv("https://calvin-data304.netlify.app/data/weather-with-dates.csv")
@@ -111,12 +114,118 @@ seattle_mean_temp <- paste0(
     "size": {"value": 80}
   }
 }'
-)
-
-vegawidget::vegawidget(seattle_mean_temp) |> browsable()
+) |> as_vegaspec()
 
 ```
 
+Note: I cannot get this to render and can't find a solution online. From what I found out, it may be my package versions or the R version that I have that doesn't allow this to work. Sometimes it works and sometimes it doesn't. 
+
+```{r}
+'
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "url": "https://calvin-data304.netlify.app/data/weather-with-dates.csv"
+  },
+  "transform": [
+    {
+      "calculate": "(datum.temp_max + datum.temp_min) / 2",
+      "as": "daily_mean"
+    },
+    {
+      "timeUnit": "month",
+      "field": "date",
+      "as": "month"
+    },
+    {
+      "aggregate": [
+        {
+          "op": "average",
+          "field": "daily_mean",
+          "as": "mean_of_means"
+        }
+      ],
+      "groupby": ["month"]
+    }
+  ],
+  "height": 400,
+  "width": 500,
+  "title": "Mean of Mean Temperatures Per Month",
+  "mark": "circle",
+  "encoding": {
+    "x": {
+      "field": "month",
+      "type": "temporal",
+      "timeUnit": "month",
+      "title": "Month"
+    },
+    "y": {
+      "field": "mean_of_means",
+      "type": "quantitative",
+      "title": "Mean of Daily Means (F)"
+    },
+    "color": {
+      "field": "year",
+      "title": "Year"
+    },
+    "fillOpacity": {
+      "value": 0.8
+    },
+    "size": {
+      "value": 80
+    }
+  }
+}' |> as_vegaspec()
+```
+
+I can't understand why there is an issue with this either. I thought I was calculating the mean daily temp and then aggregating that by month the same way I aggregated with the temp_max. 
+
 ## Visualizing Weather 2
 Exercise 3 Create a graphic that shows how the different types of weather (rain, fog, etc.) are distributed by month in Seattle. When is it rainiest in Seattle? Sunniest?
+
+## Graph #1
+
+```{r}
+'{
+"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+"data": {
+  "url": "https://calvin-data304.netlify.app/data/weather-with-dates.csv"
+},
+"height": 400,
+"width": 500,
+"title": "Seattle Weather Type Distribution (2012-2015)",
+"mark": "bar" ,
+"encoding": {
+  "x": {"field": "month", "type": "temporal", "timeUnit": "month","title": "Month"},
+  "y": {"field": "weather", "type": "quantitative", "aggregate": "count","title": "Count of Days"},
+  "color": {"field": "weather", "title": "Weather Type"},
+  "xOffset": {"field": "weather"}
+}
+}' |> as_vegaspec()
+```
+
+This graph shows the differences between each weather type through a stacked bar graph. I can clearly see that in January, the ranking of the counts go from 1. sun, 2. rain, 3. snow, 4. fog, and 5. drizzle. The only issue with this graph is that it doesn't necessarily help with evaluating whether a month has more or less of a specific weather type. For example, I can't tell if July's fog count is the same as October's fog count. I hope to fix this issue with the next graph. 
+
+## Graph #2
+```{r}
+'{
+"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+"data": {
+  "url": "https://calvin-data304.netlify.app/data/weather-with-dates.csv"
+},
+"height": 200,
+"width": 175,
+"title": "Seattle Weather Distribution (2012-2015) Faceted By Weather Type",
+"mark": "bar" ,
+"encoding": {
+  "x": {"field": "month", "type": "temporal", "timeUnit": "month","title": "Month"},
+  "y": {"field": "weather", "type": "quantitative", "aggregate": "count","title": "Count of Days"},
+  "color": {"field": "weather", "title": "Weather Type"},
+  "xOffset": {"field": "weather"},
+  "facet": {"field": "weather", "columns": 3,  "title": ""}
+}
+}' |> as_vegaspec()
+```
+
+This graph facets by weather type to highlight comparisons between months for each specific weather type. For example, I can see that in a 4 year span from 2012-2015, September had a larger overall number of sunny days than any other month. I can also see that July, September, and November had no snow. The only drawbacks of this graph is that I can't see the difference between weather types. I can't immediately tell the difference between drizzle and fog counts for any month. 
 
