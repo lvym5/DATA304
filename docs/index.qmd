@@ -9,4 +9,4 @@ format:
 
 # Homework Links
 
-[Homework5](/hw/hw5.html)
+[Homework5](hw/hw5.html)
