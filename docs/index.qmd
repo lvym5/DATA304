@@ -10,3 +10,5 @@ format:
 # Homework Links
 
 [Homework5](hw/hw5.html)
+
+[Homework6](hw/hw6.html)

@@ -20,7 +20,7 @@ library(htmltools)
 
 Copy of Graphic: 
 
-![r/DataIsBeautiful](Images/stocks.png)
+![r/DataIsBeautiful](../Images/stocks.png)
 Source: [r/dataisbeautiful](https://www.reddit.com/r/dataisbeautiful/comments/1ij5q7c/oc_three_worst_singleday_stock_market_drops_in/)
 
 What marks are being used? What variables are mapped to which properties?

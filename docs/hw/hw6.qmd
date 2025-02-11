@@ -29,7 +29,7 @@ What page is your graphic on? [Take a screen shot and include the image as well,
 
 This graph of "Catastrophe Theory" on page 50 was by far my favorite, or at the very least, caught my eye when I was reading the chapter. 
 
-![Catastrophe Theory](Images/wolves.png)
+![Catastrophe Theory](../Images/wolves.png)
 
 Why did you pick the graphic you chose?
 
@@ -73,4 +73,116 @@ To fix the y axis baseline, I would just keep the domain and range at the defaul
 To fix the redundancy of labeling, I may actually get rid of all of the y axis labels or I would just get rid of the text. I would have to decide how I want to label both the response and the completion rates on the same graph. 
 
 ## Step 3
+
+### Version 1
+
+```{r}
+'
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+"data":
+    { "values" :
+        [{"Date":"Q1-2017","Completion Rate":0.91,"Response Rate":0.023},
+        {"Date":"Q2-2017","Completion Rate":0.93,"Response Rate":0.018},
+        {"Date":"Q3-2017","Completion Rate":0.91,"Response Rate":0.028},
+        {"Date":"Q4-2017","Completion Rate":0.89,"Response Rate":0.023},
+        {"Date":"Q1-2018","Completion Rate":0.84,"Response Rate":0.034},
+        {"Date":"Q2-2018","Completion Rate":0.88,"Response Rate":0.027},
+        {"Date":"Q3-2018","Completion Rate":0.91,"Response Rate":0.026},
+        {"Date":"Q4-2018","Completion Rate":0.87,"Response Rate":0.039},
+        {"Date":"Q1-2019","Completion Rate":0.83,"Response Rate":0.028}] 
+    },
+  "columns": 2,
+  "title": "Response and Completion Rates",
+  "concat": [
+    {
+      "height": 200,
+      "width": 200,
+      "mark": "bar",
+      "encoding": {
+        "x": {"field": "Date", "type": "ordinal"},
+        "y": {"field": "Completion Rate", "type": "quantitative"}
+      }
+    },
+    {
+      "height": 200,
+      "width": 200,
+      "mark": "bar",
+      "encoding": {
+        "x": {"field": "Date", "type": "ordinal"},
+        "y": {"field": "Response Rate", "type": "quantitative"}
+      }
+    }
+  ]
+}' |> as_vegaspec()
+```
+
+In this graph, I wanted to show the differences with bar graphs because those are easy to see difference in position. I also wanted the two graphs to be separate so that it wouldn't be misleading, though I think that I did myself a disservice since the y axis have two different scales. I attempt to fix this issue in the next graph. 
+
+### Version 2
+
+```{r}
+'
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "values": [
+      {"Date": "Q1-2017", "Completion Rate": 0.91, "Response Rate": 0.023},
+      {"Date": "Q2-2017", "Completion Rate": 0.93, "Response Rate": 0.018},
+      {"Date": "Q3-2017", "Completion Rate": 0.91, "Response Rate": 0.028},
+      {"Date": "Q4-2017", "Completion Rate": 0.89, "Response Rate": 0.023},
+      {"Date": "Q1-2018", "Completion Rate": 0.84, "Response Rate": 0.034},
+      {"Date": "Q2-2018", "Completion Rate": 0.88, "Response Rate": 0.027},
+      {"Date": "Q3-2018", "Completion Rate": 0.91, "Response Rate": 0.026},
+      {"Date": "Q4-2018", "Completion Rate": 0.87, "Response Rate": 0.039},
+      {"Date": "Q1-2019", "Completion Rate": 0.83, "Response Rate": 0.028}
+    ]
+  },
+  "transform": [
+    {
+      "fold": ["Completion Rate", "Response Rate"],
+      "as": ["Metric", "Value"]
+    }
+  ],
+  "width": 800,
+  "layer": [
+    {
+      "mark": "line",
+      "encoding": {
+        "x": {"field": "Date", "type": "ordinal", "title": "Quarter"},
+        "y": {"field": "Value", "type": "quantitative", "title": "Rate"},
+        "color": {"field": "Metric", "type": "nominal", "legend": {"title": "Metric"}}
+      }
+    },
+    {
+      "mark": {"type": "point", "filled": true, "size": 100},
+      "encoding": {
+        "x": {"field": "Date", "type": "ordinal"},
+        "y": {"field": "Value", "type": "quantitative"},
+        "color": {"field": "Metric", "type": "nominal", "legend": null}
+      }
+    },
+    {
+      "mark": {"type": "text", "dy": -10, "fontSize": 12},
+      "encoding": {
+        "x": {"field": "Date", "type": "ordinal"},
+        "y": {"field": "Value", "type": "quantitative"},
+        "text": {"field": "Value", "type": "quantitative", "format": ".2%"},
+        "color": {"field": "Metric", "type": "nominal", "legend": null}
+      }
+    }
+  ]
+}
+' |> as_vegaspec()
+```
+
+I made this graph so that I can see the differences between the completion rates and the response rates but still have them on the same general y axis. I kept the percentages because the y axis differences are so small that small differences can still be evaluated. I think this is a better graph than the first one and the original, but I think that the issue might be with what the response and completion rates mean and that the completion rate is based on the reponse rate as well. 
+
+### Continuation
+
+If I had the skills or resources, I think that I would've liked to do some of these other ideas that I had: 
+
+1. In Power BI, you are often able to "click" on bars or points on a graph and it filters for the rest of the visualizations (called interactions). I would have created a response rate line graph like the previous graph but not include the completion rate. I would have a card or just text that states the percentage completion based on the selected quarter and year. 
+
+2. I am not sure if this would be a good idea, but one of my issues with this data is that the data may become misleading quickly. I wish I could be able to make a bar graph showing the response rates, but "fill in" the bar graph to show how much of that percentage was completed. I would hope to make some sort of mathematical representation to show an example like Q1-2017 -> "91% of 2.30%. 
 
