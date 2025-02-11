@@ -1,0 +1,76 @@
+---
+title: "DATA 304 Homework 6"
+author: "Lily McAboy"
+date: "02/11/2025"
+format:
+  html:
+    embed-resources: true
+    code-tools: true
+---
+```{r}
+#| include: false
+library(vegawidget)
+library(dplyr)
+library(reticulate)
+library(altair)
+library(jsonlite)
+library(htmltools)
+```
+
+# Exercise 1
+
+What is the most interesting lesson, guide, or piece of advice Tufte offers you in this chapter?
+
+The most interesting lesson that Tufte offers is that when graphing time series data, the best way to convey the information is to "smuggle" additional variables into the graph, as it effectively shows complexity while also being aesthetically pleasing and still easy to read. 
+
+Tufte shares some of his favorite graphics in this chapter. Pick one (but not the one about the military advance on and retreat from Russia) and answer the following.
+
+What page is your graphic on? [Take a screen shot and include the image as well, if you can.]
+
+This graph of "Catastrophe Theory" on page 50 was by far my favorite, or at the very least, caught my eye when I was reading the chapter. 
+
+![Catastrophe Theory](Images/wolves.png)
+
+Why did you pick the graphic you chose?
+
+I thought that the graphic looked interesting because it conveyed so much information without having distinct numerical data points. We can see how different peak fear and rage is from a docile wolf. 
+
+What encoding channels are used in the graphic? What variables are they associated with?
+
+The x axis is rage and the y axis is fear. Then, each of the nine points on the graph is a specific behavior that a wolf will exhibit based on its position. 
+
+What, if any, elements of the graphic would be hard/impossible for you to implement in Vega-Lite (given what we know so far)?
+
+I would have to have to somehow quantify each of the emotions and each of those numerical representations would have to be equidistant from each other. Then, instead of color or points, the mark would have to be the picture of each of the wolves. 
+
+What point is Tufte illustrating with this graphic?
+
+Tufte says that the data points are actually the data themselves. This allows us to interact with the field without numerical representations. It's very easy to read and interpret. We can clearly see what a very angry wolf with no fear looks like. Humans are visual creatures and this is an effective way to portray information. 
+
+# Exercise 2
+
+List one or two ideas that you learned in these sections that will change the way you design and create data graphics.
+
+Based on how Knaflic and I both like bar graphs and that they are easy to understand position and comparisons, I will most likely be trying to use bar charts more often. I also like how Knaflic suggests having people read over your graphics and attempt to understand the graphics before actually deploying them. I think that this will help if I don't know if my graphic is conveying the correct information or highlighting key patterns. 
+
+# Exercise 3
+Exercise 3 Do Exercies 2.13 of (Knaflic 2020, p 96).
+
+Your graphic should make use of at least one of layers, concatenation, or repeats.
+
+Identify some ways in which your design was affected by the things you read or the examples you saw in this assignment.
+
+## Step 1
+
+I really don't like how there are technically two y axis, and that the orange line aligns with the rightmost y axis and the blue bars align with the leftmost y axis. Knaflic also says that there are not that many rules for data visualization, but bar graphs always have to start at 0, and this is made apparent because the Q1-2018 and Q1-2019 look much lower than any other quarter, but there is only about a 5% difference. On top of the issues with the y axes, I am inclined to get rid of either all of the y axes, or remove the percentages stated on top of each bar and at each point.  
+
+## Step 2
+
+To fix the two y axes: I think that I would get rid of the rightmost y axis with the response rate percentage. 
+
+To fix the y axis baseline, I would just keep the domain and range at the default values. 
+
+To fix the redundancy of labeling, I may actually get rid of all of the y axis labels or I would just get rid of the text. I would have to decide how I want to label both the response and the completion rates on the same graph. 
+
+## Step 3
+
