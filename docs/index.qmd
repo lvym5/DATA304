@@ -12,3 +12,5 @@ format:
 [Homework5](hw/hw5.html)
 
 [Homework6](hw/hw6.html)
+
+[Homework7](hw/hw7.html)

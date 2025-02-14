@@ -1,0 +1,332 @@
+---
+title: "DATA 304 Homework 7"
+author: "Lily McAboy"
+date: "02/16/2025"
+format:
+  html:
+    embed-resources: true
+    code-tools: true
+---
+
+```{r}
+#| include: false
+library(vegawidget)
+library(dplyr)
+library(reticulate)
+library(altair)
+library(jsonlite)
+library(htmltools)
+```
+
+# Exercise 1 (Wilke on Visualizing Amounts)
+
+### a. List some guidelines/advice Wilke gives about creating bar charts.
+
+Wilke tells us to use bar charts when we are interested in the magnitude of a set of numbers. 
+
+He tells us to also decide the orientation of the bar chart, whether it be horizontal or vertical. If the labels for each bar are long, it is advisable to switch the chart to be horizontal. 
+
+If there is no order, it is best to order by ascending or descending, but if it's an ordinal categorical variable like months of the year, it is best to keep them in their respective positions. 
+
+### b. When is it not advised to use a bar chart? Why?
+
+If you have data where it would be impractical to start at 0, then it may be advisable to use a dot plot or a heat map. For example, Wilke shows a visualization for life expectancies. The lowest life expectancy is around 60 years, so it is impractical to start every bar at 0. 
+
+### c. What alternatives to bars are mentioned in this chapter?
+
+Wilke proposes a dotplot or heatmap. 
+
+### d. What guidance does Wilke give about whether or not to stack bars vs. dodge them (using an offset in Vega-Lite)?
+
+Stacked bar charts should only be used when the total sum of a bar chart is actually useful. He gives the example of the total number of people on a flight but colored by class. We may care about breakdown of a flight, but if it was his race/income/age example, stacking Asian, African American, White, Latino, and Indigenous together for an age group wouldn't tell us about anything because the sum of their incomes all together isn't useful information. 
+
+### e. Recreate Figure 6.3 in Vega-Lite
+
+```{r}
+'
+{
+"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+"data": {
+  "url": "https://calvin-data304.netlify.app/data/cow-movies.csv"
+},
+"height": 400,
+"width": 500,
+"transform": [
+  {
+    "calculate": "datum.amount/1000000",
+    "as": "calculated_amount"
+  }
+],
+"mark": "bar" ,
+"encoding": {
+  "x": {"field": "calculated_amount", "type": "quantitative","title": "Weekend Gross (million USD)"},
+  "y": {"field": "title_short", "type": "nominal", "title": "Title", "sort": "-x"}
+}
+}
+' |> as_vegaspec()
+```
+
+### f. Recreate Figures 6.8 and 6.9 in Vega-Lite
+
+#### Figure 6.8
+
+```{r}
+'
+{
+"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+"data": {
+  "url": "https://calvin-data304.netlify.app/data/cow-income.csv"
+},
+"height": 400,
+"width": 500,
+"transform": [
+  {
+    "filter": "datum.race !== \\"all\\" && datum.race !== \\"white_non_hispanic\\""
+  }
+],
+"mark": "bar" ,
+"encoding": {
+  "x": {"field": "race", "type": "nominal","title": "Race", "axis": {"labelAngle": 0}},
+  "y": {"field": "median_income", "type": "quantitative", "title": "Median Income ($)"},
+  "color": {"field": "age", "scale": {"scheme": "blues"}, "title": "Age"},
+  "xOffset": {"field": "age"}
+}
+}' |> as_vegaspec()
+```
+
+#### Figure 6.9
+
+```{r}
+'
+{
+"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+"data": {
+  "url": "https://calvin-data304.netlify.app/data/cow-income.csv"
+},
+"height": 400,
+"width": 300,
+"transform": [
+  {
+    "filter": "datum.race !== \\"all\\" && datum.race !== \\"white_non_hispanic\\""
+  }
+],
+"mark": "bar" ,
+"encoding": {
+  "x": {"field": "age", "type": "nominal","title": "Age (years)", "axis": {"labelAngle": 0}},
+  "y": {"field": "median_income", "type": "quantitative", "title": "Median Income ($)"},
+  "facet": {"field": "race", "columns": 2, "title": ""}
+},
+  "resolve": {
+    "scale": {"x": "independent"}
+}
+}' |> as_vegaspec()
+
+```
+
+### g. Recreate Figure 6.11 and explain why Figures 6.12 and 6.13 are labeled "bad"
+
+#### Figure 6.11
+
+```{r}
+'
+
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {"url": "https://calvin-data304.netlify.app/data/cow-gapminder.csv"},
+  "mark": "circle",
+  "height": 400,
+  "width": 500,
+  "transform": [
+    {
+      "filter": "datum.year == 2007"
+    },
+    {
+      "filter": "datum.country === \\"Canada\\" || datum.country === \\"Costa Rica\\" || datum.country === \\"Puerto Rico\\" || datum.country === \\"Chile\\" || datum.country === \\"Cuba\\" || datum.country === \\"United States\\" || datum.country === \\"Uruguay\\" || datum.country === \\"Mexico\\" || datum.country === \\"Panama\\" || datum.country === \\"Argentina\\" || datum.country === \\"Ecuador\\" || datum.country === \\"Venezuela\\" || datum.country === \\"Nicaragua\\" || datum.country === \\"Colombia\\" || datum.country === \\"Jamaica\\" || datum.country === \\"Brazil\\" || datum.country === \\"Dominican Republic\\" || datum.country === \\"El Salvador\\" || datum.country === \\"Paraguay\\" || datum.country === \\"Peru\\" || datum.country === \\"Guatemala\\" || datum.country === \\"Honduras\\" || datum.country === \\"Trinidad and Tobago\\" || datum.country === \\"Bolivia\\" || datum.country === \\"Haiti\\""
+    }
+  ],
+  "encoding": {
+    "y": {"field": "country", "type": "nominal", "title": "", "sort": "-x"},
+    "x": {"field": "lifeExp", "type": "quantitative", "title": "Life Expentancy (Years)", "scale": {"domain": [55,85]}},
+    "size": {"value": 80}
+  }
+}
+' |> as_vegaspec()
+```
+
+#### 6.12 and 6.13 are "bad"
+
+In Figure 6.12, the graph is a bar chart, but since the x axis has to start at 0 (due to the bar chart nature), we have so much "ink" space that is being used that doesn't give us any quality information. It mostly distracts us from the main point of the graphic. 
+
+In Figure 6.13, the graph is a dot plot, but the only issue is that the points are not sorted. This makes it difficult to see patterns and is very hard to read. 
+
+# Exercise 2 (Video Presentation By Healy)
+
+### a. Watch the video starting at 12:18 until 49:52. (You are welcome to watch the whole thing if you like.) You will see some things that look familiar from our discussion of perception in class, but there are also a number of additional examples and discussion.
+
+### b. List at least three pieces of advice you can glean from this video that might help you design good graphics.
+
+1. It is difficult for us to make calculations in our head (for example, finding the actual length of a specific section in a stacked bar chart is much more difficult than a dodged bar). We should try to make it so that we can convey as much information in the least amount of time
+
+2. Putting the categorical variables on the y axis can make it look more like a "table" and is easier to interpret than putting the categorical variables on the X axis. 
+
+3. Context of the visualization is important because if we create a "good" visualization but present it to the wrong audience, the story is lost. 
+
+### c. There are two figures in this video that come from Chapter 1 of Tufte (2001). Did you spot them? Which figures are they?
+
+1. Napoleon's Retreat From Moscow
+
+2. I couldn't find the other one because it didn't seem like any of them align with Tufte's chapter 1 book but there was the Papyrus-font style graph with the shadowed bars that I believe we talked about in class (that was also from Tufte)
+
+# Exercise 3 (Heat Maps)
+
+### a. In Vega-Lite lingo, what makes something be a heat map?
+
+A heat map is different from a dot plot or a bar graph because it maps data values to color rather than data value to position. 
+
+One of the features of a heat map is that it is difficult to define exact numbers of the data, but it is very useful to see trends. 
+
+### b. Recreate Figure 6.14 or 6.15 from Wilke (2019) (your choice). Or get fancy and include an interactive element that let’s you select the year to order by.
+
+I am including two graphics. The first one is where it looks the "prettiest". There were some missing values but using impute didn't work. 
+When the filter isn't in place, the ordering looks incorrect. (See New Zealand) 
+
+```{r}
+'
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "url": "https://calvin-data304.netlify.app/data/cow-internet2.csv"
+  },
+    "transform": [
+    {
+      "filter": "datum.year > 1995"
+    }
+  ],
+  "mark": "rect",
+  "height": 400,
+  "width": 600,
+  "encoding": {
+    "y": {
+      "field": "country",
+      "type": "nominal",
+      "sort": "-color",
+      "title": ""
+    },
+    "x": {
+      "field": "year",
+      "type": "ordinal",
+      "title": "Year",
+      "axis": {"labelAngle": 0}
+    },
+    "color": {
+      "aggregate": "mean",
+      "field": "users",
+      "title": "User Count",
+      "scale": {"scheme": "inferno"}
+    }
+  },
+  "config": {
+    "axis": {"grid": true, "tickBand": "extent"}
+  }
+}' |> as_vegaspec()
+```
+
+#### Help
+```{r}
+'{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "url": "https://calvin-data304.netlify.app/data/cow-internet2.csv"
+  },
+  "mark": "rect",
+  "height": 400,
+  "width": 600,
+  "encoding": {
+    "y": {
+      "field": "country",
+      "type": "nominal",
+      "sort": "-color",
+      "title": ""
+    },
+    "x": {
+      "field": "year",
+      "type": "ordinal",
+      "title": "Year",
+      "axis": {"labelAngle": 0}
+    },
+    "color": {
+      "aggregate": "mean",
+      "field": "users",
+      "title": "User Count",
+      "scale": {"scheme": "inferno"}
+    }
+  },
+  "config": {
+    "axis": {"grid": true, "tickBand": "extent"}
+  }
+}
+' |> as_vegaspec()
+```
+
+### c. At around 28:10, Healy presents a possible problem with heat maps, what is it?
+
+It is difficult for people to see small differences with colors, so depending on the color scheme, we may not be able to perceive those differences. He also states that it's important to choose a good color scheme to help offset this issue. 
+
+### d. But starting at around 44:12, he presents a heat map as a “show pony”. Why isn’t the problem presented earlier an issue here? Is it an issue in the figure you make in part b? Why or why not?
+
+The issue of the heat map in 44:12 is that we are taking a simple graph and making it much more complicated-looking for very little reason. I don't think that our graph in part b is necessarily victim to the issue because we want to use a quantitative variable for the legend. In the France graph, it seems redundant to create a heat map because the only thing that it can capture is when lots of people die during a certain number of years, which could be achieved using a dot plot. Although Healy says it's a show pony, I don't necessarily think that it's too bad of a graphic because it helps define trends, such as the decline in infant mortality. 
+
+# Exercise 4 (Pie Charts) 
+
+### a. What does Healy have to say about pie charts in his video?
+
+Healy does not like pie charts. 
+He talks about how differences in variables is much harder to interpret in a pie chart than a bar chart. We have to understand our cognitive ablities to differentiate position and size and it's a lot harder to do this with a pie chart. 
+
+### b. How does that compare to what Wilke says in Section 10.1 of Wilke (2019)?
+
+This is not similar to what Wilke says. Wilke states that "none of these visualizations is consistently superior over any other." What Wilke did say that I agree with is that pie charts are good if you want to emphasize a simple fraction with small datasets. For example, a pie chart for the parliament data looks clean and nice but a bar chart looks a little pointless and dumb. 
+
+### c. What alternatives does Wilke present to pie charts and in what situations does he favor each? (You should be comparing pie charts to two other types of graphics that can be made with the same sort of data.)
+
+One alternative is a dodged (side by side) bar chart, which is helpful when percentages or values are roughly similar. This is harder to see when you have a stacked bar or a pie chart because we wouldn't be able to see meaningful differences. 
+
+Another alternative is to use stacked bar charts if you want to show how proportions change. It can also be helpful to use a stacked density chart if we have more than 2 categories of color because it can still capture useful trends like a line graph but shows overall percentages. 
+
+### d. We won’t make many pie charts, but I suppose you should make at least one. To do this in Vega-Lite, use an arc mark. Recreate Figure 10.1 of Wilke (2019).
+
+```{r}
+'{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+"data":
+    { "values" :
+        [{"Parliament":"CDU/CSU","Number": 243},
+        {"Parliament":"SPD","Number": 214},
+        {"Parliament":"FDP","Number": 39}] 
+    },
+  "height": 400,
+  "width": 600,
+  "encoding": {
+    "theta": {"field": "Number", "type": "quantitative", "stack": true},
+    "color": {"field": "Parliament", "type": "nominal", "legend": null}
+  },
+  "layer": [{
+    "mark": {"type": "arc", "outerRadius": 200}
+  }, {
+    "mark": {"type": "text", "radius": 270, "fontSize": 20},
+    "encoding": {
+      "text": {"field": "Parliament", "type": "nominal"}
+    }
+  }, {
+    "mark": {"type": "text", "radius": 120, "fontSize": 20},
+    "encoding": {
+      "text": {"field": "Number", "type": "quantitative"},
+      "color": {"value": "black"}
+    }
+  }
+  ]
+  }
+' |> as_vegaspec()
+```
+
+I cannot figure out how to align the numbers for 39. 
